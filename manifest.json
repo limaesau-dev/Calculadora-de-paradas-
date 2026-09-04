@@ -1,0 +1,15 @@
+{
+  "name": "Calculadora de Paradas Reais - Lima",
+  "short_name": "Paradas Lima",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#ea580c",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2838/2838694.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

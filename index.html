@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Paradas Reais - Criado por Lima</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ea580c">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --border-color: #334155;
+            --accent-color: #f97316;
+            --accent-hover: #ea580c;
+            --subtext: #94a3b8;
+            --box-bg: #0f172a;
+        }
+
+        /* Modo Sol / Alto Contraste */
+        body.theme-sol {
+            --bg-color: #ffffff;
+            --card-bg: #f1f5f9;
+            --text-color: #020617;
+            --border-color: #cbd5e1;
+            --accent-color: #ea580c;
+            --accent-hover: #c2410c;
+            --subtext: #475569;
+            --box-bg: #ffffff;
+        }
+
+        /* Modo Economia OLED */
+        body.theme-oled {
+            --bg-color: #000000;
+            --card-bg: #0a0a0a;
+            --text-color: #ffffff;
+            --border-color: #262626;
+            --accent-color: #ff6600;
+            --accent-hover: #cc5200;
+            --subtext: #a3a3a3;
+            --box-bg: #000000;
+        }
+
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; transition: background-color 0.3s, color 0.3s; }
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 15px; 
+        }
+        .container {
+            width: 100%;
+            max-width: 480px;
+        }
+        .theme-bar {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 6px;
+            margin-bottom: 15px;
+        }
+        .theme-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--subtext);
+            padding: 8px 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .theme-btn.active {
+            background-color: var(--accent-color);
+            color: #ffffff;
+        }
+        .card { 
+            background-color: var(--card-bg); 
+            padding: 22px; 
+            border-radius: 18px; 
+            border: 1px solid var(--border-color); 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .creator-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #f97316, #dc2626);
+            color: #ffffff;
+            font-size: 0.85rem;
+            font-weight: 900;
+            padding: 6px 16px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 12px rgba(249, 115, 22, 0.5);
+            margin-bottom: 8px;
+        }
+        h1 { 
+            font-size: 1.4rem; 
+            margin: 6px 0 2px 0; 
+            font-weight: 800;
+        }
+        .btn-upload { 
+            background-color: var(--accent-color); 
+            color: #ffffff; 
+            padding: 16px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 1rem;
+            display: block; 
+            text-align: center; 
+            width: 100%; 
+            box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+        }
+        .btn-upload:active { 
+            transform: scale(0.98);
+        }
+        .file-input { display: none; }
+        
+        .file-info-badge {
+            display: none;
+            background-color: var(--box-bg);
+            border: 1px dashed var(--accent-color);
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: var(--subtext);
+            text-align: center;
+        }
+        .file-info-badge strong { color: var(--text-color); }
+
+        .results-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            margin-top: 18px; 
+        }
+        .result-box { 
+            background-color: var(--box-bg); 
+            padding: 16px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border-color); 
+            text-align: center;
+        }
+        .result-box .number { 
+            font-size: 2.2rem; 
+            font-weight: 800; 
+            color: var(--accent-color); 
+            margin-top: 4px; 
+        }
+        .lbl-result { 
+            font-size: 0.75rem; 
+            color: var(--subtext); 
+            text-transform: uppercase; 
+            font-weight: 700;
+        }
+
+        /* Bairros */
+        .bairros-section {
+            margin-top: 22px;
+            display: none;
+        }
+        .bairros-title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--text-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .bairros-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .bairro-item {
+            background-color: var(--box-bg);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        .bairro-name { font-weight: 600; }
+        .bairro-count { 
+            background-color: var(--accent-color); 
+            color: #fff; 
+            padding: 2px 8px; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            font-size: 0.75rem;
+        }
+
+        /* Banner PWA */
+        .pwa-banner {
+            display: none;
+            background-color: var(--card-bg);
+            border: 1px solid var(--accent-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-top: 15px;
+            text-align: left;
+        }
+        .pwa-banner-title { font-weight: bold; font-size: 0.85rem; color: var(--accent-color); margin-bottom: 4px; }
+        .pwa-banner-text { font-size: 0.75rem; color: var(--subtext); margin-bottom: 10px; line-height: 1.3; }
+        .pwa-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Seletor de Tema -->
+        <div class="theme-bar">
+            <button class="theme-btn active" id="btnThemeDark" onclick="setTheme('dark')">🌙 Noite</button>
+            <button class="theme-btn" id="btnThemeSol" onclick="setTheme('sol')">☀️ Sol (Dia)</button>
+            <button class="theme-btn" id="btnThemeOled" onclick="setTheme('oled')">⚡ Bateria</button>
+        </div>
+
+        <div class="card">
+            <div class="header">
+                <div class="creator-tag">⚡ Criado por Lima</div>
+                <h1>Calculadora de paradas reais</h1>
+            </div>
+
+            <label for="excelFile" class="btn-upload">📙 Enviar Planilha da Shopee</label>
+            <input type="file" id="excelFile" class="file-input" accept=".xlsx, .xls, .csv">
+
+            <div id="fileInfo" class="file-info-badge">
+                📄 <strong id="fileName">-</strong><br>
+                🕒 Processado às: <span id="fileTime">-</span>
+            </div>
+
+            <div class="results-grid">
+                <div class="result-box">
+                    <div class="lbl-result">Total Pacotes</div>
+                    <div class="number" id="totalPacotes">0</div>
+                </div>
+                <div class="result-box">
+                    <div class="lbl-result">Paradas Reais</div>
+                    <div class="number" id="paradasReais">0</div>
+                </div>
+            </div>
+
+            <!-- Seção de Bairros -->
+            <div id="bairrosSection" class="bairros-section">
+                <div class="bairros-title">📍 Paradas Reais por Bairro:</div>
+                <div id="bairrosList" class="bairros-list"></div>
+            </div>
+        </div>
+
+        <!-- Banner PWA Amigável -->
+        <div id="pwaBanner" class="pwa-banner">
+            <div class="pwa-banner-title">📲 Adicionar atalho na tela inicial?</div>
+            <div class="pwa-banner-text">Crie um atalho leve na tela inicial do seu celular para abrir a calculadora rapidamente (Não baixa arquivos nem ocupa memória).</div>
+            <button class="pwa-btn" id="btnInstallPwa">Criar Atalho</button>
+        </div>
+    </div>
+
+    <script>
+        // --- GERENCIAMENTO DE TEMAS ---
+        function setTheme(theme) {
+            document.body.className = '';
+            document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+            if (theme === 'sol') {
+                document.body.classList.add('theme-sol');
+                document.getElementById('btnThemeSol').classList.add('active');
+            } else if (theme === 'oled') {
+                document.body.classList.add('theme-oled');
+                document.getElementById('btnThemeOled').classList.add('active');
+            } else {
+                document.getElementById('btnThemeDark').classList.add('active');
+            }
+            localStorage.setItem('lima_theme', theme);
+        }
+        
+        // Carrega tema salvo
+        const savedTheme = localStorage.getItem('lima_theme') || 'dark';
+        setTheme(savedTheme);
+
+        // --- CARREGAR DADOS SALVOS (PERSISTÊNCIA) ---
+        function loadSavedData() {
+            const savedData = localStorage.getItem('lima_last_calc');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                renderResults(data.total, data.paradas, data.bairros, data.fileName, data.time);
+            }
+        }
+
+        // --- LEITURA E PROCESSAMENTO DO ARQUIVO ---
+        document.getElementById('excelFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
+
+                if (rows.length === 0) {
+                    alert("A planilha selecionada está vazia!");
+                    return;
+                }
+
+                const colunas = Object.keys(rows[0]);
+                const colEndereco = colunas.find(c => /destination address|endereço|endereco|logradouro|rua/i.test(c)) || colunas[0];
+                const colBairro = colunas.find(c => /bairro|district|neighborhood/i.test(c));
+
+                const paradasUnicas = new Set();
+                const bairrosMap = {}; 
+                let totalPacotes = 0;
+
+                rows.forEach(row => {
+                    let enderecoBruto = String(row[colEndereco] || "").trim();
+
+                    if (enderecoBruto) {
+                        totalPacotes++;
+
+                        let partes = enderecoBruto.split(',');
+                        let rua = partes[0] ? partes[0].toLowerCase().trim() : "";
+                        let complementoNum = partes[1] ? partes[1].toLowerCase().trim() : "";
+
+                        rua = rua.replace(/\b(r|rua)\b/g, "rua")
+                                 .replace(/\b(av|avenida)\b/g, "avenida")
+                                 .replace(/\b(pça|praça)\b/g, "praça")
+                                 .replace(/\s+/g, " ")
+                                 .trim();
+
+                        let numMatch = complementoNum.match(/\d+/);
+                        let numeroLimpo = "";
+
+                        if (numMatch) {
+                            numeroLimpo = numMatch[0];
+                        } else {
+                            let numNaRua = rua.match(/\b\d+\b/);
+                            if (numNaRua) {
+                                numeroLimpo = numNaRua[0];
+                                rua = rua.replace(/\b\d+\b/g, "").trim();
+                            }
+                        }
+
+                        let chaveParada = `${rua}___${numeroLimpo}`;
+
+                        // Mapeia Bairro para cada Parada Única
+                        if (!paradasUnicas.has(chaveParada)) {
+                            paradasUnicas.add(chaveParada);
+                            
+                            let bairroNome = colBairro ? String(row[colBairro] || "").trim() : "Outros";
+                            if (!bairroNome) bairroNome = "Outros";
+
+                            bairrosMap[bairroNome] = (bairrosMap[bairroNome] || 0) + 1;
+                        }
+                    }
+                });
+
+                const horaAtual = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                
+                // Salvar resultados no navegador
+                const payload = {
+                    total: totalPacotes,
+                    paradas: paradasUnicas.size,
+                    bairros: bairrosMap,
+                    fileName: file.name,
+                    time: horaAtual
+                };
+                localStorage.setItem('lima_last_calc', JSON.stringify(payload));
+
+                renderResults(totalPacotes, paradasUnicas.size, bairrosMap, file.name, horaAtual);
+            };
+
+            reader.readAsArrayBuffer(file);
+        });
+
+        function renderResults(total, paradas, bairros, fileName, time) {
+            document.getElementById('totalPacotes').innerText = total;
+            document.getElementById('paradasReais').innerText = paradas;
+            document.getElementById('fileName').innerText = fileName;
+            document.getElementById('fileTime').innerText = time;
+            document.getElementById('fileInfo').style.display = 'block';
+
+            // Renderiza lista de Bairros
+            const bairrosList = document.getElementById('bairrosList');
+            bairrosList.innerHTML = '';
+            
+            const bairrosOrdenados = Object.keys(bairros).sort((a,b) => bairros[b] - bairros[a]);
+
+            if (bairrosOrdenados.length > 0) {
+                bairrosOrdenados.forEach(bairro => {
+                    const item = document.createElement('div');
+                    item.className = 'bairro-item';
+                    item.innerHTML = `<span class="bairro-name">${bairro}</span> <span class="bairro-count">${bairros[bairro]} paradas</span>`;
+                    bairrosList.appendChild(item);
+                });
+                document.getElementById('bairrosSection').style.display = 'block';
+            }
+        }
+
+        // Carrega dados se existirem
+        loadSavedData();
+
+        // --- REGISTRO DO SERVICE WORKER & PWA ---
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('pwaBanner').style.display = 'block';
+        });
+
+        document.getElementById('btnInstallPwa').addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => {
+                    document.getElementById('pwaBanner').style.display = 'none';
+                    deferredPrompt = null;
+                });
+            }
+        });
+    </script>
+</body>
+</html>
