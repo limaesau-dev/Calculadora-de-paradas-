@@ -1,15 +1,17 @@
 {
+  "short_name": "Paradas Reais",
   "name": "Calculadora de Paradas Reais - Lima",
-  "short_name": "Paradas Lima",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#ea580c",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2838/2838694.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23f97316'/><path d='M20 55 h35 v-20 h-20 l-10 10 z' fill='%23ffffff'/><circle cx='30' cy='60' r='6' fill='%230f172a'/><circle cx='50' cy='60' r='6' fill='%230f172a'/><text x='62' y='52' font-family='sans-serif' font-weight='900' font-size='22' fill='%23ffffff'>E.L</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "start_url": "./index.html",
+  "background_color": "#0b132b",
+  "theme_color": "#ff6b00",
+  "display": "standalone",
+  "orientation": "portrait"
 }
