@@ -235,14 +235,14 @@
             font-size: 0.65rem;
         }
 
-        /* Banner PWA para Adicionar Atalho Direto */
+        /* Banner PWA de Instalação Direta */
         .pwa-card {
+            display: none; /* Escondido por padrão até o sistema autorizar */
             background: linear-gradient(135deg, rgba(255, 107, 0, 0.15), rgba(255, 0, 85, 0.1));
             border: 1px solid var(--accent-color);
             border-radius: 14px;
             padding: 10px 12px;
             margin-top: 10px;
-            display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 8px;
@@ -275,7 +275,7 @@
         }
         .btn-pwa-install:active { transform: scale(0.95); }
 
-        /* Rodapé de Assinatura Visível */
+        /* Rodapé de Assinatura Sempre Visível */
         .footer {
             margin-top: 12px;
             padding: 8px 0 4px 0;
@@ -340,11 +340,11 @@
                 </div>
             </div>
 
-            <!-- Card de Atalho para Tela Inicial -->
-            <div id="pwaCard" class="pwa-card" style="display: flex;">
+            <!-- Card de Atalho para Tela Inicial (Só exibe se o Android liberar o clique único) -->
+            <div id="pwaCard" class="pwa-card">
                 <div class="pwa-info">
                     <div class="pwa-title">📲 Adicionar atalho ao celular?</div>
-                    <div class="pwa-sub">1 clique para ter o ícone E.L na aba inicial.</div>
+                    <div class="pwa-sub">Confirme para ter o ícone E.L na aba inicial.</div>
                 </div>
                 <button class="btn-pwa-install" id="btnInstallPwa" onclick="installPwa()">ADICIONAR</button>
             </div>
@@ -492,7 +492,7 @@
 
         loadSavedData();
 
-        // --- PWA: ADICIONAR ATALHO DIRETO ---
+        // --- REGISTRO DO SERVICE WORKER E INSTALAÇÃO DIRETA NATIVA ---
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
         }
@@ -501,19 +501,19 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
+            // Exibe o cartão apenas quando a confirmação automática do Android estiver pronta!
+            document.getElementById('pwaCard').style.display = 'flex';
         });
 
         function installPwa() {
             if (deferredPrompt) {
-                deferredPrompt.prompt();
+                deferredPrompt.prompt(); // Dispara o popup nativo de Sim/Não do Android
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
                         document.getElementById('pwaCard').style.display = 'none';
                     }
                     deferredPrompt = null;
                 });
-            } else {
-                alert("Para adicionar à tela inicial, abra o menu de opções do navegador (três pontinhos) e toque em 'Adicionar à tela inicial'.");
             }
         }
     </script>
