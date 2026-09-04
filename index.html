@@ -18,18 +18,20 @@
             --text-color: #f8fafc;
             --border-color: #334155;
             --accent-color: #f97316;
+            --accent-glow: rgba(249, 115, 22, 0.35);
             --subtext: #94a3b8;
             --box-bg: #0f172a;
         }
 
         body.theme-sol {
-            --bg-color: #ffffff;
-            --card-bg: #f1f5f9;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
             --text-color: #020617;
             --border-color: #cbd5e1;
             --accent-color: #ea580c;
+            --accent-glow: rgba(234, 88, 12, 0.25);
             --subtext: #475569;
-            --box-bg: #ffffff;
+            --box-bg: #f1f5f9;
         }
 
         body.theme-oled {
@@ -38,6 +40,7 @@
             --text-color: #ffffff;
             --border-color: #262626;
             --accent-color: #ff6600;
+            --accent-glow: rgba(255, 102, 0, 0.4);
             --subtext: #a3a3a3;
             --box-bg: #000000;
         }
@@ -45,10 +48,10 @@
         * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; transition: background-color 0.2s, color 0.2s; }
         
         html, body {
-            height: 100%;
+            height: 100vh;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
         body { 
@@ -58,16 +61,16 @@
             flex-direction: column;
             align-items: center; 
             justify-content: space-between;
-            padding: 10px; 
+            padding: 8px 12px; 
         }
 
         .container {
             width: 100%;
-            max-width: 450px;
+            max-width: 440px;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 100vh;
         }
 
         .theme-bar {
@@ -76,15 +79,15 @@
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 10px;
-            padding: 4px;
-            margin-bottom: 8px;
+            padding: 3px;
+            margin-bottom: 6px;
         }
         .theme-btn {
             flex: 1;
             background: none;
             border: none;
             color: var(--subtext);
-            padding: 6px 2px;
+            padding: 5px 2px;
             font-size: 0.7rem;
             font-weight: 700;
             border-radius: 6px;
@@ -97,46 +100,47 @@
 
         .card { 
             background-color: var(--card-bg); 
-            padding: 14px; 
+            padding: 12px 14px; 
             border-radius: 14px; 
             border: 1px solid var(--border-color); 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
         
         .header {
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .creator-tag {
             display: inline-block;
             background: linear-gradient(135deg, #f97316, #dc2626);
             color: #ffffff;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 900;
-            padding: 4px 12px;
-            border-radius: 15px;
+            padding: 3px 10px;
+            border-radius: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            box-shadow: 0 0 8px rgba(249, 115, 22, 0.4);
-            margin-bottom: 4px;
+            box-shadow: 0 0 10px var(--accent-glow);
+            margin-bottom: 2px;
         }
         h1 { 
-            font-size: 1.15rem; 
+            font-size: 1.1rem; 
             margin: 2px 0 0 0; 
             font-weight: 800;
         }
 
         .btn-upload { 
-            background-color: var(--accent-color); 
+            background: linear-gradient(135deg, var(--accent-color), #dc2626); 
             color: #ffffff; 
-            padding: 12px; 
+            padding: 10px; 
             border-radius: 10px; 
             cursor: pointer; 
             font-weight: bold; 
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             display: block; 
             text-align: center; 
             width: 100%; 
+            box-shadow: 0 3px 10px var(--accent-glow);
         }
         .btn-upload:active { transform: scale(0.98); }
         .file-input { display: none; }
@@ -146,9 +150,9 @@
             background-color: var(--box-bg);
             border: 1px dashed var(--accent-color);
             border-radius: 8px;
-            padding: 6px;
-            margin-top: 8px;
-            font-size: 0.75rem;
+            padding: 5px;
+            margin-top: 6px;
+            font-size: 0.7rem;
             color: var(--subtext);
             text-align: center;
         }
@@ -158,20 +162,20 @@
             display: grid; 
             grid-template-columns: 1fr 1fr; 
             gap: 8px; 
-            margin-top: 10px; 
+            margin-top: 8px; 
         }
         .result-box { 
             background-color: var(--box-bg); 
-            padding: 10px; 
+            padding: 8px; 
             border-radius: 10px; 
             border: 1px solid var(--border-color); 
             text-align: center;
         }
         .result-box .number { 
-            font-size: 1.8rem; 
+            font-size: 1.6rem; 
             font-weight: 800; 
             color: var(--accent-color); 
-            line-height: 1;
+            line-height: 1.1;
             margin-top: 2px;
         }
         .lbl-result { 
@@ -182,63 +186,63 @@
         }
 
         .bairros-section {
-            margin-top: 10px;
+            margin-top: 8px;
             display: none;
         }
         .bairros-title {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 800;
             color: var(--text-color);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
         .bairros-list {
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            max-height: 130px;
+            gap: 4px;
+            max-height: 100px;
             overflow-y: auto;
             padding-right: 2px;
         }
         .bairro-item {
             background-color: var(--box-bg);
             border: 1px solid var(--border-color);
-            padding: 6px 10px;
-            border-radius: 8px;
+            padding: 5px 8px;
+            border-radius: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
         .bairro-name { font-weight: 600; }
         .bairro-count { 
             background-color: var(--accent-color); 
             color: #fff; 
-            padding: 1px 6px; 
-            border-radius: 10px; 
+            padding: 1px 5px; 
+            border-radius: 8px; 
             font-weight: bold; 
             font-size: 0.65rem;
         }
 
-        /* Banner PWA Ajustado */
+        /* Banner PWA em Estilo Notificação Discreta */
         .pwa-banner {
+            display: none;
             background-color: var(--card-bg);
             border: 1px solid var(--accent-color);
             border-radius: 10px;
-            padding: 8px 12px;
-            margin-top: 8px;
-            display: flex;
+            padding: 6px 10px;
+            margin-top: 6px;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
+            gap: 6px;
         }
         .pwa-text-box { text-align: left; }
-        .pwa-banner-title { font-weight: bold; font-size: 0.75rem; color: var(--accent-color); }
+        .pwa-banner-title { font-weight: bold; font-size: 0.72rem; color: var(--accent-color); }
         .pwa-banner-text { font-size: 0.65rem; color: var(--subtext); margin: 0; }
         .pwa-btn {
             background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 6px 10px;
+            padding: 5px 10px;
             border-radius: 6px;
             font-size: 0.7rem;
             font-weight: bold;
@@ -246,12 +250,12 @@
             white-space: nowrap;
         }
 
-        /* Rodapé de Encaixe Perfeito */
+        /* Rodapé Fixo Encaixado */
         .footer {
-            margin-top: 8px;
+            margin-top: auto;
             padding: 6px 0;
             text-align: center;
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             color: var(--subtext);
             border-top: 1px solid var(--border-color);
         }
@@ -310,17 +314,17 @@
                 </div>
             </div>
 
-            <!-- Banner PWA Permanente e Compacto -->
+            <!-- Banner PWA com Confirmação Direta do Sistema -->
             <div id="pwaBanner" class="pwa-banner">
                 <div class="pwa-text-box">
-                    <div class="pwa-banner-title">📲 Atalho no Celular</div>
-                    <p class="pwa-banner-text">Adicione à tela inicial (Leve e sem downloads).</p>
+                    <div class="pwa-banner-title">📲 Adicionar atalho na tela inicial?</div>
+                    <p class="pwa-banner-text">Sem baixar arquivos ou ocupar memória.</p>
                 </div>
-                <button class="pwa-btn" id="btnInstallPwa" onclick="handlePwaClick()">Instalar</button>
+                <button class="pwa-btn" id="btnInstallPwa" onclick="installPwa()">Adicionar</button>
             </div>
         </div>
 
-        <!-- Rodapé de Assinatura Sem Rolagem -->
+        <!-- Rodapé de Assinatura -->
         <footer class="footer">
             <div class="footer-title">Calculadora de paradas reais | Desenvolvido por Lima. 🧡🧡</div>
             <div class="footer-contact">Contato/Suporte: <a href="tel:85991562339">8599156-2339</a></div>
@@ -462,6 +466,7 @@
 
         loadSavedData();
 
+        // --- REGISTRO DE PWA & ATALHO DIRETO ---
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
         }
@@ -470,14 +475,18 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
+            document.getElementById('pwaBanner').style.display = 'flex';
         });
 
-        function handlePwaClick() {
+        function installPwa() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
-            } else {
-                alert("Para adicionar à tela inicial:\n\n1. Toque nos 3 pontinhos no canto superior do Chrome.\n2. Escolha 'Adicionar à tela inicial' ou 'Instalar aplicativo'.");
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.getElementById('pwaBanner').style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                });
             }
         }
     </script>
