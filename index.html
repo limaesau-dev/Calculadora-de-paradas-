@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Paradas Reais | Lima</title>
     
-    <!-- Ícone da Aba (Favicon SVG: Caminhão Laranja + E.L) -->
+    <!-- Ícone Favicon SVG (Caminhão Laranja + E.L) -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23f97316'/><path d='M20 55 h35 v-20 h-20 l-10 10 z' fill='%23ffffff'/><circle cx='30' cy='60' r='6' fill='%230f172a'/><circle cx='50' cy='60' r='6' fill='%230f172a'/><text x='62' y='52' font-family='sans-serif' font-weight='900' font-size='22' fill='%23ffffff'>E.L</text></svg>">
 
     <link rel="manifest" href="manifest.json">
@@ -13,134 +13,144 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #f8fafc;
-            --border-color: #334155;
-            --accent-color: #f97316;
-            --accent-glow: rgba(249, 115, 22, 0.35);
-            --subtext: #94a3b8;
-            --box-bg: #0f172a;
+            --bg-color: #0b132b;
+            --card-bg: #1c2541;
+            --text-color: #ffffff;
+            --border-color: #3a506b;
+            --accent-color: #ff6b00;
+            --accent-glow: rgba(255, 107, 0, 0.4);
+            --subtext: #a0aec0;
+            --box-bg: #0b132b;
         }
 
         body.theme-sol {
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
-            --text-color: #020617;
+            --text-color: #0f172a;
             --border-color: #cbd5e1;
             --accent-color: #ea580c;
             --accent-glow: rgba(234, 88, 12, 0.25);
-            --subtext: #475569;
+            --subtext: #64748b;
             --box-bg: #f1f5f9;
         }
 
         body.theme-oled {
             --bg-color: #000000;
-            --card-bg: #0a0a0a;
+            --card-bg: #111111;
             --text-color: #ffffff;
             --border-color: #262626;
-            --accent-color: #ff6600;
-            --accent-glow: rgba(255, 102, 0, 0.4);
-            --subtext: #a3a3a3;
+            --accent-color: #ff5500;
+            --accent-glow: rgba(255, 85, 0, 0.5);
+            --subtext: #888888;
             --box-bg: #000000;
         }
 
-        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; transition: background-color 0.2s, color 0.2s; }
+        * { 
+            box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            transition: background-color 0.2s, color 0.2s;
+        }
         
         html, body {
-            height: 100vh;
+            height: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
         }
 
-        body { 
-            background-color: var(--bg-color); 
-            color: var(--text-color); 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            justify-content: space-between;
-            padding: 8px 12px; 
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
 
-        .container {
+        .main-wrapper {
             width: 100%;
-            max-width: 440px;
-            height: 100vh;
+            max-width: 420px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            padding: 10px 12px;
         }
 
+        /* Seletor de Temas */
         .theme-bar {
             display: flex;
-            justify-content: space-between;
+            gap: 4px;
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 3px;
-            margin-bottom: 6px;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 8px;
         }
         .theme-btn {
             flex: 1;
             background: none;
             border: none;
             color: var(--subtext);
-            padding: 5px 2px;
-            font-size: 0.7rem;
+            padding: 6px 2px;
+            font-size: 0.72rem;
             font-weight: 700;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
         }
         .theme-btn.active {
             background-color: var(--accent-color);
             color: #ffffff;
+            box-shadow: 0 0 10px var(--accent-glow);
         }
 
+        /* Cartão Principal */
         .card { 
             background-color: var(--card-bg); 
-            padding: 12px 14px; 
-            border-radius: 14px; 
+            padding: 14px; 
+            border-radius: 16px; 
             border: 1px solid var(--border-color); 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
         }
         
         .header {
             text-align: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         .creator-tag {
             display: inline-block;
-            background: linear-gradient(135deg, #f97316, #dc2626);
+            background: linear-gradient(135deg, #ff6b00, #ff0055);
             color: #ffffff;
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             font-weight: 900;
-            padding: 3px 10px;
-            border-radius: 12px;
+            padding: 3px 12px;
+            border-radius: 20px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 0 10px var(--accent-glow);
-            margin-bottom: 2px;
+            letter-spacing: 0.8px;
+            box-shadow: 0 0 12px var(--accent-glow);
+            margin-bottom: 4px;
         }
         h1 { 
-            font-size: 1.1rem; 
+            font-size: 1.15rem; 
             margin: 2px 0 0 0; 
             font-weight: 800;
+            letter-spacing: -0.3px;
         }
 
+        /* Botão de Upload Destacado */
         .btn-upload { 
             background: linear-gradient(135deg, var(--accent-color), #dc2626); 
             color: #ffffff; 
-            padding: 10px; 
-            border-radius: 10px; 
+            padding: 12px; 
+            border-radius: 12px; 
             cursor: pointer; 
-            font-weight: bold; 
-            font-size: 0.85rem;
+            font-weight: 800; 
+            font-size: 0.88rem;
             display: block; 
             text-align: center; 
             width: 100%; 
-            box-shadow: 0 3px 10px var(--accent-glow);
+            box-shadow: 0 4px 15px var(--accent-glow);
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .btn-upload:active { transform: scale(0.98); }
         .file-input { display: none; }
@@ -150,30 +160,31 @@
             background-color: var(--box-bg);
             border: 1px dashed var(--accent-color);
             border-radius: 8px;
-            padding: 5px;
-            margin-top: 6px;
+            padding: 6px;
+            margin-top: 8px;
             font-size: 0.7rem;
             color: var(--subtext);
             text-align: center;
         }
         .file-info-badge strong { color: var(--text-color); }
 
+        /* Resultados */
         .results-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
             gap: 8px; 
-            margin-top: 8px; 
+            margin-top: 10px; 
         }
         .result-box { 
             background-color: var(--box-bg); 
             padding: 8px; 
-            border-radius: 10px; 
+            border-radius: 12px; 
             border: 1px solid var(--border-color); 
             text-align: center;
         }
         .result-box .number { 
-            font-size: 1.6rem; 
-            font-weight: 800; 
+            font-size: 1.7rem; 
+            font-weight: 900; 
             color: var(--accent-color); 
             line-height: 1.1;
             margin-top: 2px;
@@ -182,24 +193,25 @@
             font-size: 0.65rem; 
             color: var(--subtext); 
             text-transform: uppercase; 
-            font-weight: 700;
+            font-weight: 800;
         }
 
+        /* Bairros */
         .bairros-section {
-            margin-top: 8px;
+            margin-top: 10px;
             display: none;
         }
         .bairros-title {
             font-size: 0.72rem;
             font-weight: 800;
             color: var(--text-color);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
         .bairros-list {
             display: flex;
             flex-direction: column;
             gap: 4px;
-            max-height: 100px;
+            max-height: 90px;
             overflow-y: auto;
             padding-right: 2px;
         }
@@ -217,55 +229,68 @@
         .bairro-count { 
             background-color: var(--accent-color); 
             color: #fff; 
-            padding: 1px 5px; 
+            padding: 1px 6px; 
             border-radius: 8px; 
-            font-weight: bold; 
+            font-weight: 800; 
             font-size: 0.65rem;
         }
 
-        /* Banner PWA em Estilo Notificação Discreta */
-        .pwa-banner {
-            display: none;
-            background-color: var(--card-bg);
+        /* Banner PWA para Adicionar Atalho Direto */
+        .pwa-card {
+            background: linear-gradient(135deg, rgba(255, 107, 0, 0.15), rgba(255, 0, 85, 0.1));
             border: 1px solid var(--accent-color);
-            border-radius: 10px;
-            padding: 6px 10px;
-            margin-top: 6px;
+            border-radius: 14px;
+            padding: 10px 12px;
+            margin-top: 10px;
+            display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 6px;
+            gap: 8px;
+            box-shadow: 0 4px 12px var(--accent-glow);
         }
-        .pwa-text-box { text-align: left; }
-        .pwa-banner-title { font-weight: bold; font-size: 0.72rem; color: var(--accent-color); }
-        .pwa-banner-text { font-size: 0.65rem; color: var(--subtext); margin: 0; }
-        .pwa-btn {
+        .pwa-info {
+            text-align: left;
+        }
+        .pwa-title {
+            font-weight: 800;
+            font-size: 0.75rem;
+            color: var(--text-color);
+        }
+        .pwa-sub {
+            font-size: 0.65rem;
+            color: var(--subtext);
+            margin-top: 1px;
+        }
+        .btn-pwa-install {
             background-color: var(--accent-color);
-            color: white;
+            color: #ffffff;
             border: none;
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 800;
             cursor: pointer;
             white-space: nowrap;
+            box-shadow: 0 2px 8px var(--accent-glow);
         }
+        .btn-pwa-install:active { transform: scale(0.95); }
 
-        /* Rodapé Fixo Encaixado */
+        /* Rodapé de Assinatura Visível */
         .footer {
-            margin-top: auto;
-            padding: 6px 0;
+            margin-top: 12px;
+            padding: 8px 0 4px 0;
             text-align: center;
             font-size: 0.68rem;
             color: var(--subtext);
             border-top: 1px solid var(--border-color);
         }
         .footer-title {
-            font-weight: bold;
+            font-weight: 800;
             color: var(--text-color);
         }
         .footer-contact {
-            margin-top: 2px;
-            font-weight: 600;
+            margin-top: 3px;
+            font-weight: 700;
         }
         .footer-contact a {
             color: var(--accent-color);
@@ -275,7 +300,7 @@
 </head>
 <body>
 
-    <div class="container">
+    <div class="main-wrapper">
         <div>
             <!-- Seletor de Tema -->
             <div class="theme-bar">
@@ -284,13 +309,14 @@
                 <button class="theme-btn" id="btnThemeOled" onclick="setTheme('oled')">⚡ Bateria</button>
             </div>
 
+            <!-- Card Principal -->
             <div class="card">
                 <div class="header">
                     <div class="creator-tag">⚡ Criado por Lima</div>
                     <h1>Calculadora de paradas reais</h1>
                 </div>
 
-                <label for="excelFile" class="btn-upload">📙 Enviar Planilha da Shopee</label>
+                <label for="excelFile" class="btn-upload">📙 Enviar Planilha Shopee</label>
                 <input type="file" id="excelFile" class="file-input" accept=".xlsx, .xls, .csv">
 
                 <div id="fileInfo" class="file-info-badge">
@@ -314,20 +340,20 @@
                 </div>
             </div>
 
-            <!-- Banner PWA com Confirmação Direta do Sistema -->
-            <div id="pwaBanner" class="pwa-banner">
-                <div class="pwa-text-box">
-                    <div class="pwa-banner-title">📲 Adicionar atalho na tela inicial?</div>
-                    <p class="pwa-banner-text">Sem baixar arquivos ou ocupar memória.</p>
+            <!-- Card de Atalho para Tela Inicial -->
+            <div id="pwaCard" class="pwa-card" style="display: flex;">
+                <div class="pwa-info">
+                    <div class="pwa-title">📲 Adicionar atalho ao celular?</div>
+                    <div class="pwa-sub">1 clique para ter o ícone E.L na aba inicial.</div>
                 </div>
-                <button class="pwa-btn" id="btnInstallPwa" onclick="installPwa()">Adicionar</button>
+                <button class="btn-pwa-install" id="btnInstallPwa" onclick="installPwa()">ADICIONAR</button>
             </div>
         </div>
 
-        <!-- Rodapé de Assinatura -->
+        <!-- Rodapé Fixo e Visível -->
         <footer class="footer">
-            <div class="footer-title">Calculadora de paradas reais | Desenvolvido por Lima. 🧡🧡</div>
-            <div class="footer-contact">Contato/Suporte: <a href="tel:85991562339">8599156-2339</a></div>
+            <div class="footer-title">Calculadora de paradas reais | Desenvolvido por Lima 🧡</div>
+            <div class="footer-contact">Contato/Suporte: <a href="tel:85991562339">85 99156-2339</a></div>
         </footer>
     </div>
 
@@ -466,7 +492,7 @@
 
         loadSavedData();
 
-        // --- REGISTRO DE PWA & ATALHO DIRETO ---
+        // --- PWA: ADICIONAR ATALHO DIRETO ---
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
         }
@@ -475,7 +501,6 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            document.getElementById('pwaBanner').style.display = 'flex';
         });
 
         function installPwa() {
@@ -483,10 +508,12 @@
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
-                        document.getElementById('pwaBanner').style.display = 'none';
+                        document.getElementById('pwaCard').style.display = 'none';
                     }
                     deferredPrompt = null;
                 });
+            } else {
+                alert("Para adicionar à tela inicial, abra o menu de opções do navegador (três pontinhos) e toque em 'Adicionar à tela inicial'.");
             }
         }
     </script>
