@@ -398,7 +398,7 @@
                         📦 Pacotes: <span id="succTotal">0</span> | 📍 Paradas Reais Otimizadas: <span id="succParadas">0</span>
                     </div>
                     <div class="success-alert">
-                        ⚠️ <strong>Lembrete:</strong> Lembre-se de checar sempre as etiquetas antes de entregar os produtos! pacotes adicionados, terão ordem/sequence de NaN
+                        ⚠️ <strong>Lembrete:</strong> Lembre-se de checar sempre as etiquetas antes de entregar os produtos!
                     </div>
                 </div>
 
@@ -490,7 +490,6 @@
                 const colBairro = colunas.find(c => /bairro|district|neighborhood/i.test(c));
                 const colSeq = colunas.find(c => /^sequence$/i.test(c)) || "Sequence";
                 const colStop = colunas.find(c => /^stop$/i.test(c)) || "Stop";
-                const colNotes = colunas.find(c => /notes|observação|observacao|obs/i.test(c)) || "Notes";
 
                 const paradasGrouped = {};
                 const bairrosMap = {}; 
@@ -535,32 +534,33 @@
 
                             paradasGrouped[chaveParada] = {
                                 bairro: bairroNome,
-                                empytRow: { ...row },
-                                seqs: []
+                                pacotes: []
                             };
                             bairrosMap[bairroNome] = (bairrosMap[bairroNome] || 0) + 1;
                         }
 
-                        paradasGrouped[chaveParada].seqs.push(seqVal);
+                        paradasGrouped[chaveParada].pacotes.push({
+                            rowOriginal: row,
+                            seqOrig: seqVal
+                        });
                     }
                 });
 
-                // 2. Mapeamento para exibição completa das sequências no Circuit
+                // 2. Reconstrução dos Dados Otimizados para Exportação
                 const novagrid = [];
                 let currentStop = 1;
 
                 Object.keys(paradasGrouped).forEach(chave => {
                     let grupo = paradasGrouped[chave];
-                    let seqsAgrupadas = grupo.seqs.join(', ');
+                    let seqsAgrupadas = grupo.pacotes.map(p => p.seqOrig).join(', ');
 
-                    let linhaUnica = { ...grupo.empytRow };
-                    
-                    // Define a sequência como o texto formatado das sequências agrupadas
-                    linhaUnica[colSeq] = seqsAgrupadas;
-                    linhaUnica[colStop] = currentStop;
-                    linhaUnica[colNotes] = seqsAgrupadas;
+                    grupo.pacotes.forEach(pacote => {
+                        let novaLinha = { ...pacote.rowOriginal };
+                        novaLinha[colSeq] = seqsAgrupadas;
+                        novaLinha[colStop] = currentStop;
+                        novagrid.push(novaLinha);
+                    });
 
-                    novagrid.push(linhaUnica);
                     currentStop++;
                 });
 
@@ -606,23 +606,14 @@
             const novoWorkbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(novoWorkbook, novaSheet, "Sheet1");
 
-            let dataExtraida = "";
-            const matchData = nomeArquivoOriginal.match(/\d{2}[-_\.]\d{2}[-_\.]\d{4}/);
-
-            if (matchData) {
-                dataExtraida = matchData[0].replace(/[_.]/g, "-");
-            } else {
-                const hoje = new Date();
-                const dia = String(hoje.getDate()).padStart(2, '0');
-                const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-                const ano = hoje.getFullYear();
-                dataExtraida = `${dia}-${mes}-${ano}`;
+            let nomeDownload = "Casadinhas_" + nomeArquivoOriginal;
+            if (!nomeDownload.endsWith('.xlsx')) {
+                nomeDownload = nomeDownload.replace(/\.[^/.]+$/, "") + ".xlsx";
             }
-
-            const nomeDownload = `Rota mamao ${dataExtraida}.xlsx`;
 
             XLSX.writeFile(novoWorkbook, nomeDownload);
 
+            // Exibir mensagem e estatísticas
             document.getElementById('succTotal').innerText = document.getElementById('totalPacotes').innerText;
             document.getElementById('succParadas').innerText = document.getElementById('paradasReais').innerText;
             document.getElementById('successBox').style.display = 'block';
@@ -649,6 +640,7 @@
                     deferredPrompt = null;
                 });
             } else {
+                // Se for iOS ou navegador sem prompt automático
                 const isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
                 if (isIos) {
                     document.getElementById('iosInstructions').innerHTML = 'No Safari do iPhone, toque no botão <strong>Compartilhar</strong> 📤 no menu inferior e selecione <strong>"Adicionar à Tela de Início"</strong> ➕.';
