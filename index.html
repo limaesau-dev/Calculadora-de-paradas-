@@ -534,33 +534,29 @@
 
                             paradasGrouped[chaveParada] = {
                                 bairro: bairroNome,
-                                pacotes: []
+                                empytRow: { ...row },
+                                seqs: []
                             };
                             bairrosMap[bairroNome] = (bairrosMap[bairroNome] || 0) + 1;
                         }
 
-                        paradasGrouped[chaveParada].pacotes.push({
-                            rowOriginal: row,
-                            seqOrig: seqVal
-                        });
+                        paradasGrouped[chaveParada].seqs.push(seqVal);
                     }
                 });
 
-                // 2. Reconstrução dos Dados Otimizados para Exportação
+                // 2. Criação de APENAS 1 linha por Parada Real (Desduplicação)
                 const novagrid = [];
                 let currentStop = 1;
 
                 Object.keys(paradasGrouped).forEach(chave => {
                     let grupo = paradasGrouped[chave];
-                    let seqsAgrupadas = grupo.pacotes.map(p => p.seqOrig).join(', ');
+                    let seqsAgrupadas = grupo.seqs.join(', ');
 
-                    grupo.pacotes.forEach(pacote => {
-                        let novaLinha = { ...pacote.rowOriginal };
-                        novaLinha[colSeq] = seqsAgrupadas;
-                        novaLinha[colStop] = currentStop;
-                        novagrid.push(novaLinha);
-                    });
+                    let linhaUnica = { ...grupo.empytRow };
+                    linhaUnica[colSeq] = seqsAgrupadas;
+                    linhaUnica[colStop] = currentStop;
 
+                    novagrid.push(linhaUnica);
                     currentStop++;
                 });
 
@@ -604,7 +600,7 @@
 
             const novaSheet = XLSX.utils.json_to_sheet(dadosProcessados);
             const novoWorkbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(novoWorkbook, novaSheet, "Sheet1");
+            XLSX.utils.book_append_sheet(novoWorkbook, novoWorkbook, "Sheet1");
 
             // Extrai a data do arquivo original (ex: 01-09-2026) ou pega a data de hoje
             let dataExtraida = "";
