@@ -398,7 +398,7 @@
                         📦 Pacotes: <span id="succTotal">0</span> | 📍 Paradas Reais Otimizadas: <span id="succParadas">0</span>
                     </div>
                     <div class="success-alert">
-                        ⚠️ <strong>Lembrete:</strong> Lembre-se de checar sempre as etiquetas antes de entregar os produtos!
+                        ⚠️ <strong>Lembrete:</strong> Lembre-se de checar sempre as etiquetas antes de entregar os produtos! pacotes adicionados, terão ordem/sequence de NaN
                     </div>
                 </div>
 
@@ -490,6 +490,7 @@
                 const colBairro = colunas.find(c => /bairro|district|neighborhood/i.test(c));
                 const colSeq = colunas.find(c => /^sequence$/i.test(c)) || "Sequence";
                 const colStop = colunas.find(c => /^stop$/i.test(c)) || "Stop";
+                const colNotes = colunas.find(c => /notes|observação|observacao|obs/i.test(c)) || "Notes";
 
                 const paradasGrouped = {};
                 const bairrosMap = {}; 
@@ -526,7 +527,7 @@
                         }
 
                         let chaveParada = `${rua}___${numeroLimpo}`;
-                        let seqVal = row[colSeq] !== undefined && row[colSeq] !== "" ? parseInt(row[colSeq], 10) : (idx + 1);
+                        let seqVal = row[colSeq] !== undefined && row[colSeq] !== "" ? row[colSeq] : (idx + 1);
 
                         if (!paradasGrouped[chaveParada]) {
                             let bairroNome = colBairro ? String(row[colBairro] || "").trim() : "Outros";
@@ -544,7 +545,7 @@
                     }
                 });
 
-                // 2. Desduplicação compatível com o Circuit
+                // 2. Mapeamento para exibição completa das sequências no Circuit
                 const novagrid = [];
                 let currentStop = 1;
 
@@ -554,10 +555,10 @@
 
                     let linhaUnica = { ...grupo.empytRow };
                     
-                    // Circuit exige número inteiro nas colunas numéricas
-                    linhaUnica[colSeq] = grupo.seqs[0]; 
+                    // Define a sequência como o texto formatado das sequências agrupadas
+                    linhaUnica[colSeq] = seqsAgrupadas;
                     linhaUnica[colStop] = currentStop;
-                    linhaUnica["PacotesAgrupados"] = seqsAgrupadas;
+                    linhaUnica[colNotes] = seqsAgrupadas;
 
                     novagrid.push(linhaUnica);
                     currentStop++;
