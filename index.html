@@ -526,7 +526,7 @@
                         }
 
                         let chaveParada = `${rua}___${numeroLimpo}`;
-                        let seqVal = row[colSeq] !== undefined && row[colSeq] !== "" ? row[colSeq] : (idx + 1);
+                        let seqVal = row[colSeq] !== undefined && row[colSeq] !== "" ? parseInt(row[colSeq], 10) : (idx + 1);
 
                         if (!paradasGrouped[chaveParada]) {
                             let bairroNome = colBairro ? String(row[colBairro] || "").trim() : "Outros";
@@ -544,7 +544,7 @@
                     }
                 });
 
-                // 2. Criação de APENAS 1 linha por Parada Real (Desduplicação)
+                // 2. Desduplicação compatível com o Circuit
                 const novagrid = [];
                 let currentStop = 1;
 
@@ -553,8 +553,11 @@
                     let seqsAgrupadas = grupo.seqs.join(', ');
 
                     let linhaUnica = { ...grupo.empytRow };
-                    linhaUnica[colSeq] = seqsAgrupadas;
+                    
+                    // Circuit exige número inteiro nas colunas numéricas
+                    linhaUnica[colSeq] = grupo.seqs[0]; 
                     linhaUnica[colStop] = currentStop;
+                    linhaUnica["PacotesAgrupados"] = seqsAgrupadas;
 
                     novagrid.push(linhaUnica);
                     currentStop++;
@@ -600,9 +603,8 @@
 
             const novaSheet = XLSX.utils.json_to_sheet(dadosProcessados);
             const novoWorkbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(novoWorkbook, novoWorkbook, "Sheet1");
+            XLSX.utils.book_append_sheet(novoWorkbook, novaSheet, "Sheet1");
 
-            // Extrai a data do arquivo original (ex: 01-09-2026) ou pega a data de hoje
             let dataExtraida = "";
             const matchData = nomeArquivoOriginal.match(/\d{2}[-_\.]\d{2}[-_\.]\d{4}/);
 
@@ -616,12 +618,10 @@
                 dataExtraida = `${dia}-${mes}-${ano}`;
             }
 
-            // Nome padronizado: "Rota mamão DD-MM-AAAA.xlsx"
-            const nomeDownload = `Rota mamão ${dataExtraida}.xlsx`;
+            const nomeDownload = `Rota mamao ${dataExtraida}.xlsx`;
 
             XLSX.writeFile(novoWorkbook, nomeDownload);
 
-            // Exibir mensagem e estatísticas
             document.getElementById('succTotal').innerText = document.getElementById('totalPacotes').innerText;
             document.getElementById('succParadas').innerText = document.getElementById('paradasReais').innerText;
             document.getElementById('successBox').style.display = 'block';
