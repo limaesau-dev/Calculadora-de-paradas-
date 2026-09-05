@@ -209,15 +209,7 @@
         .success-stats {
             font-size: 0.72rem;
             font-weight: 700;
-            margin-bottom: 6px;
-        }
-        .success-alert {
-            font-size: 0.68rem;
-            color: var(--subtext);
-            background-color: var(--box-bg);
-            padding: 6px;
-            border-radius: 6px;
-            border-left: 3px solid var(--accent-color);
+            margin-bottom: 2px;
         }
 
         /* Resultados */
@@ -397,9 +389,6 @@
                     <div class="success-stats">
                         📦 Pacotes: <span id="succTotal">0</span> | 📍 Paradas Reais Otimizadas: <span id="succParadas">0</span>
                     </div>
-                    <div class="success-alert">
-                        ⚠️ <strong>Lembrete:</strong> Lembre-se de checar sempre as etiquetas antes de entregar os produtos!
-                    </div>
                 </div>
 
                 <div class="results-grid">
@@ -490,6 +479,7 @@
                 const colBairro = colunas.find(c => /bairro|district|neighborhood/i.test(c));
                 const colSeq = colunas.find(c => /^sequence$/i.test(c)) || "Sequence";
                 const colStop = colunas.find(c => /^stop$/i.test(c)) || "Stop";
+                const colNotes = colunas.find(c => /notes|observação|observacao|obs/i.test(c)) || "Notes";
 
                 const paradasGrouped = {};
                 const bairrosMap = {}; 
@@ -534,33 +524,32 @@
 
                             paradasGrouped[chaveParada] = {
                                 bairro: bairroNome,
-                                pacotes: []
+                                empytRow: { ...row },
+                                seqs: []
                             };
                             bairrosMap[bairroNome] = (bairrosMap[bairroNome] || 0) + 1;
                         }
 
-                        paradasGrouped[chaveParada].pacotes.push({
-                            rowOriginal: row,
-                            seqOrig: seqVal
-                        });
+                        paradasGrouped[chaveParada].seqs.push(seqVal);
                     }
                 });
 
-                // 2. Reconstrução dos Dados Otimizados para Exportação
+                // 2. Mapeamento para exibição completa das sequências no Circuit
                 const novagrid = [];
                 let currentStop = 1;
 
                 Object.keys(paradasGrouped).forEach(chave => {
                     let grupo = paradasGrouped[chave];
-                    let seqsAgrupadas = grupo.pacotes.map(p => p.seqOrig).join(', ');
+                    let seqsAgrupadas = grupo.seqs.join(', ');
 
-                    grupo.pacotes.forEach(pacote => {
-                        let novaLinha = { ...pacote.rowOriginal };
-                        novaLinha[colSeq] = seqsAgrupadas;
-                        novaLinha[colStop] = currentStop;
-                        novagrid.push(novaLinha);
-                    });
+                    let linhaUnica = { ...grupo.empytRow };
+                    
+                    // Define a sequência e observações como o texto formatado das sequências agrupadas
+                    linhaUnica[colSeq] = seqsAgrupadas;
+                    linhaUnica[colStop] = currentStop;
+                    linhaUnica[colNotes] = seqsAgrupadas;
 
+                    novagrid.push(linhaUnica);
                     currentStop++;
                 });
 
@@ -606,14 +595,23 @@
             const novoWorkbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(novoWorkbook, novaSheet, "Sheet1");
 
-            let nomeDownload = "Casadinhas_" + nomeArquivoOriginal;
-            if (!nomeDownload.endsWith('.xlsx')) {
-                nomeDownload = nomeDownload.replace(/\.[^/.]+$/, "") + ".xlsx";
+            let dataExtraida = "";
+            const matchData = nomeArquivoOriginal.match(/\d{2}[-_\.]\d{2}[-_\.]\d{4}/);
+
+            if (matchData) {
+                dataExtraida = matchData[0].replace(/[_.]/g, "-");
+            } else {
+                const hoje = new Date();
+                const dia = String(hoje.getDate()).padStart(2, '0');
+                const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+                const ano = hoje.getFullYear();
+                dataExtraida = `${dia}-${mes}-${ano}`;
             }
+
+            const nomeDownload = `Rota mamao ${dataExtraida}.xlsx`;
 
             XLSX.writeFile(novoWorkbook, nomeDownload);
 
-            // Exibir mensagem e estatísticas
             document.getElementById('succTotal').innerText = document.getElementById('totalPacotes').innerText;
             document.getElementById('succParadas').innerText = document.getElementById('paradasReais').innerText;
             document.getElementById('successBox').style.display = 'block';
@@ -640,7 +638,6 @@
                     deferredPrompt = null;
                 });
             } else {
-                // Se for iOS ou navegador sem prompt automático
                 const isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
                 if (isIos) {
                     document.getElementById('iosInstructions').innerHTML = 'No Safari do iPhone, toque no botão <strong>Compartilhar</strong> 📤 no menu inferior e selecione <strong>"Adicionar à Tela de Início"</strong> ➕.';
